@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using HotelBot.Dialogs;
+using HotelBot.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 
@@ -18,7 +20,7 @@ namespace HotelBot
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                await Conversation.SendAsync(activity, MakeLuisDialog);
             }
             else
             {
@@ -27,6 +29,12 @@ namespace HotelBot
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
+
+        private IDialog<RoomReservation> MakeLuisDialog()
+        {
+            return Chain.From(() => new LUISDialog(RoomReservation.BuildForm));
+        }
+
 
         private Activity HandleSystemMessage(Activity message)
         {
